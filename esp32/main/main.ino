@@ -42,9 +42,11 @@ void taskSerialComm(void *parameter) {
   while (1) {
     if (Serial.available()) {
         SerialBT.write(Serial.read());
+        SerialBT.write('\n');
     }
     if (SerialBT.available()) {
         Serial.write(SerialBT.read());
+        Serial.write('\n');
     }
     vTaskDelay(ms2Tick(20));
   }

@@ -1,5 +1,5 @@
-CMakeFiles/serial_comm_tester.dir/main.o: \
-  /Users/Hikari/Documents/GitHub/unsw_final_thesis/POSIX/serial_remote_controller/main.cpp \
+CMakeFiles/run_remote.dir/remote.cpp.o: \
+  /Users/Hikari/Documents/GitHub/unsw_final_thesis/POSIX/remote/remote.cpp \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/usr/include/c++/v1/iostream \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/usr/include/c++/v1/__config \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/usr/include/pthread.h \
@@ -355,11 +355,4 @@ CMakeFiles/serial_comm_tester.dir/main.o: \
   /usr/local/Cellar/sdl2/2.0.14_1/include/SDL2/SDL_timer.h \
   /usr/local/Cellar/sdl2/2.0.14_1/include/SDL2/SDL_version.h \
   /usr/local/Cellar/sdl2/2.0.14_1/include/SDL2/SDL_locale.h \
-  /usr/local/Cellar/sdl2/2.0.14_1/include/SDL2/SDL_misc.h \
-  /Users/Hikari/Documents/GitHub/unsw_final_thesis/POSIX/serial_remote_controller/sercom.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/usr/include/termios.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/usr/include/sys/termios.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/usr/include/sys/_types/_posix_vdisable.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/usr/include/sys/ttycom.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/usr/include/sys/ioccom.h \
-  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk/usr/include/sys/ttydefaults.h
+  /usr/local/Cellar/sdl2/2.0.14_1/include/SDL2/SDL_misc.h
