@@ -11,7 +11,11 @@ static const BaseType_t app_cpu = 0;
 static const BaseType_t app_cpu = 1;
 #endif
 
+// essp
 #include "BluetoothSerial.h"
+
+// https://github.com/madhephaestus/ESP32Servo
+#include "ESP32Servo.h"
 
 // Bluetooth initialisation error
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
@@ -20,7 +24,11 @@ static const BaseType_t app_cpu = 1;
 
 // Pins
 static const int led_pin = 23;
+static const int servo_steer_pin = 18;
+static const int servo_drive_pin = 19;
+
 BluetoothSerial SerialBT;
+Servo servo_driver, servo_steer;
 
 static int ms2Tick(int ms) {
     return ms / portTICK_PERIOD_MS;
@@ -39,22 +47,62 @@ void taskToggleLED(void *parameter) {
 
 // Task for Serial Input
 void taskSerialComm(void *parameter) {
+  int pos = 90;
   while (1) {
-    if (Serial.available()) {
-        SerialBT.write(Serial.read());
-        SerialBT.write('\n');
-    }
+    // if (Serial.available()) {
+    //     SerialBT.write(Serial.read());
+    //     SerialBT.write('\n');
+    // }
     if (SerialBT.available()) {
-        Serial.write(SerialBT.read());
+        char command = SerialBT.read();
+        switch (command) {
+            case 'F':
+                servo_driver.write(90-45);
+                vTaskDelay(ms2Tick(3000));
+                servo_driver.write(90);
+                break;
+            case 'R':
+                pos += 5;
+                if (pos >= 90+45) {
+                    pos = 90+45;
+                }
+                servo_steer.write(pos);
+                vTaskDelay(ms2Tick(75));
+                break;
+            case 'B':
+                servo_driver.write(90+45);
+                vTaskDelay(ms2Tick(3000));
+                servo_driver.write(90); 
+            break;
+            case 'L':
+                pos -= 5;
+                if (pos <= 45) {
+                    pos = 45;
+                }
+                servo_steer.write(pos);
+                vTaskDelay(ms2Tick(75));
+                break;
+        }
+        Serial.write(pos);
         Serial.write('\n');
     }
     vTaskDelay(ms2Tick(20));
   }
 }
 
+// Task for driving servo
+
 static void setupGPIO(void) {
     // put your setup code here, to run once:
     pinMode(led_pin, OUTPUT);
+    // servo init
+    for (int timer=0; timer < 4; timer++) {
+        ESP32PWM::allocateTimer(timer);
+    }
+    servo_steer.setPeriodHertz(50);
+    servo_steer.attach(servo_steer_pin, 500, 2400);
+    servo_driver.setPeriodHertz(50);
+    servo_driver.attach(servo_drive_pin, 800, 2200);
 }
 
 static void setupBlueTooth(void) {
