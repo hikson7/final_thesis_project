@@ -26,7 +26,7 @@ C(2, 1) = m3*g*l*sin(q2);
 B(1, 1) = 1/R;
 B(2, 1) = 1;
 
-tau = [0.5; 0.5]; % always same output for open loop?
+tau = [0.1; 0.1]; % always same output for open loop?
 % tau = [0; 0];
 
 state_out(1, 1) = qd1;
