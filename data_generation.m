@@ -5,6 +5,9 @@ clear
 figure(1);
 clf
 
+% radius of shell. Parameter used for dynamics and kinematics
+global R;
+
 tspan = [0, 10];
 
 % initial conditions
@@ -15,8 +18,8 @@ qd2_0 = 0;
 
 state = [q1_0; q2_0; qd1_0; qd2_0];
 
-options = odeset("RelTol", 1e-5);
-
+% options = odeset("RelTol", 1e-5);
+options = odeset("RelTol", 1e-8);
 [t, state_out] = ode45(@model, tspan, state, options);
 
 % retrieve necessary outputs
@@ -28,35 +31,50 @@ theta_d = state_out(:, 3);  % shell turning velocity
 phi = zeros(size(t, 1), 1);
 phi_d = zeros(size(t, 1), 1);
 
-insert_at = 5;      % [s]
 duration = 0.5;     % [s]
 steer_velocity = 0.01;  % [rad/s]
+% 
+% duration = 4.5;
+% steer_velocity = 0.001;
+
+insert_at = 5;      % [s]
 [phi, phi_d] = insert_steer_vel_input(t, insert_at, duration, steer_velocity, phi, phi_d);
 
+% duration = 0.5;
+% steer_velocity = -0.01;
+steer_velocity = -steer_velocity;
 insert_at = 7;
-duration = 0.5;
-steer_velocity = -0.01;  
 [phi, phi_d] = insert_steer_vel_input(t, insert_at, duration, steer_velocity, phi, phi_d);
-
-
-R = 1;
 
 [x, y, ] = calculate_pose(theta_d, phi, phi_d, R, t);
 
 plot(x, y, 'b-');
+title("Spherical robot motion in 2D plane");
+xlabel("x displacement [m]")
+ylabel("y displacement [m]")
 grid on;
 grid minor;
 % range = 1000;
-
 % axis([-range/2 range/2 -range/2 range/2])
 
 figure(2);
+subplot(2, 1, 1);
 
 plot(t, phi, 'b-');
+grid on;
+grid minor;
+title("Steering input as angular displacement")
+xlabel("time [s]")
+ylabel("angular displacement [rad]")
 
-figure(3);
-
+% figure(3);
+subplot(2, 1, 2);
 plot(t, phi_d, 'b-');
+grid on;
+grid minor;
+title("Steering input as angular velocity");
+xlabel("time [t]")
+ylabel("anguar velocity [rad/s]")
 
 end
 

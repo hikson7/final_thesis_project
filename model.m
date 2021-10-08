@@ -1,4 +1,13 @@
 function [state_out] = model(t, state)
+global R;
+
+% m1 = 0.05; % mass of shell
+% m2 = 0.1; % mass of internal
+% m3 = 1; % mass of counter weight
+% l = 0.03; % length of connection rod
+% R = 0.08;  % radius of shell
+% j1 = 0.1;
+% const_torque = 0.0005;
 
 m1 = 1; % mass of shell
 m2 = 1; % mass of internal
@@ -7,6 +16,7 @@ l = 0.3; % length of connection rod
 R = 1;  % radius of shell
 g = 9.80665;
 j1 = 1;
+const_torque = 0.1;
 
 % q1 = shell turn angle
 % q2 = swing angle
@@ -26,8 +36,7 @@ C(2, 1) = m3*g*l*sin(q2);
 B(1, 1) = 1/R;
 B(2, 1) = 1;
 
-tau = [0.1; 0.1]; % always same output for open loop?
-% tau = [0; 0];
+tau = [const_torque; const_torque]; % always same output for open loop?
 
 state_out(1, 1) = qd1;
 state_out(2, 1) = qd2;
