@@ -1,7 +1,7 @@
 /* Brief: Example code of FreeRTOS ESP32 from Digi-Key video tutorial
  * Modified by: Hikari Hashida
  * Written: 08-Jun-2021
- * Last Visited: 08-Jun-2021
+ * Last Visited: 13-Jul-2021
  * Resource: https://www.youtube.com/watch?v=JIr7Xm_riRs&t=1s 
 */
 
@@ -23,7 +23,7 @@ static const BaseType_t app_cpu = 1;
 #endif
 
 // Pins
-static const int led_pin = 23;
+static const int led_pin = 16;
 static const int servo_steer_pin = 18;
 static const int servo_drive_pin = 19;
 
@@ -34,32 +34,41 @@ static int ms2Tick(int ms) {
     return ms / portTICK_PERIOD_MS;
 }
 
-// Task for led toggle
-void taskToggleLED(void *parameter) {
-    // vTaskDelay takes number of ticks, not milliseconds
-    while (1) {
-        digitalWrite(led_pin, HIGH);
-        vTaskDelay(ms2Tick(500));
-        digitalWrite(led_pin, LOW);
-        vTaskDelay(ms2Tick(500));
-    }
-}
+// // Task for led toggle
+// void taskToggleLED(void *parameter) {
+//     // vTaskDelay takes number of ticks, not milliseconds
+//     while (1) {
+//         digitalWrite(led_pin, HIGH);
+//         vTaskDelay(ms2Tick(500));
+//         digitalWrite(led_pin, LOW);
+//         vTaskDelay(ms2Tick(500));
+//     }
+// }
 
 // Task for Serial Input
 void taskSerialComm(void *parameter) {
   int pos = 90;
+  servo_steer.write(pos);
   while (1) {
     // if (Serial.available()) {
     //     SerialBT.write(Serial.read());
     //     SerialBT.write('\n');
     // }
+    int single_step = 30;
+    int drive_time = 1500;
     if (SerialBT.available()) {
         char command = SerialBT.read();
+        digitalWrite(led_pin, HIGH);
         switch (command) {
             case 'F':
-                servo_driver.write(90-45);
-                vTaskDelay(ms2Tick(3000));
+                servo_driver.write(90-single_step);
+                vTaskDelay(ms2Tick(drive_time));
                 servo_driver.write(90);
+                break;
+            case 'B':
+                servo_driver.write(90+single_step);
+                vTaskDelay(ms2Tick(drive_time));
+                servo_driver.write(90); 
                 break;
             case 'R':
                 pos += 5;
@@ -69,11 +78,6 @@ void taskSerialComm(void *parameter) {
                 servo_steer.write(pos);
                 vTaskDelay(ms2Tick(75));
                 break;
-            case 'B':
-                servo_driver.write(90+45);
-                vTaskDelay(ms2Tick(3000));
-                servo_driver.write(90); 
-            break;
             case 'L':
                 pos -= 5;
                 if (pos <= 45) {
@@ -83,8 +87,9 @@ void taskSerialComm(void *parameter) {
                 vTaskDelay(ms2Tick(75));
                 break;
         }
-        Serial.write(pos);
-        Serial.write('\n');
+        digitalWrite(led_pin, LOW);
+        SerialBT.write(command);
+        SerialBT.write('\n');
     }
     vTaskDelay(ms2Tick(20));
   }
@@ -122,8 +127,8 @@ static void setupTasks() {
         cpu core                - Which CPU core to run apps on
     );
     */
-    xTaskCreatePinnedToCore(taskToggleLED, "Toggle LED", 1024, NULL, 1, NULL, app_cpu);
-    xTaskCreatePinnedToCore(taskSerialComm, "serial com", 1024, NULL, 5, NULL, app_cpu);
+    // xTaskCreatePinnedToCore(taskToggleLED, "Toggle LED", 1024, NULL, 1, NULL, app_cpu);
+    xTaskCreatePinnedToCore(taskSerialComm, "serial com", 2048, NULL, 5, NULL, app_cpu);
 }
 
 void setup() {
@@ -133,6 +138,58 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  
+    // int drive_time = 1500;
+    // int DRIVE_ORIGIN = 1500; 
+    // servo_driver.writeMicroseconds(DRIVE_ORIGIN);
+    // // servo_driver.write(90);
+    // // servo_steer.write(90);
+    // vTaskDelay(ms2Tick(5000));
+    // // servo_steer.write(0);
+    // servo_driver.write(0);
+    // vTaskDelay(ms2Tick(5000));
+    // // int pos = 90;
+    // // servo_steer.write(pos);
+
+    // int single_step = 30/2;
+    // int drive_time = 1500;
+    // int DRIVE_ORIGIN = 1500;
+    // int STEER_ORIGIN = 90;
+    // if (SerialBT.available() >= 2) {
+    //     char command = SerialBT.read();
+    //     uint8_t val = SerialBT.read();
+    //     digitalWrite(led_pin, HIGH);
+    //     switch (command) {
+    //         case 'F':
+    //             servo_driver.writeMicroseconds(DRIVE_ORIGIN-val);
+    //             vTaskDelay(ms2Tick(drive_time));
+    //             servo_driver.writeMicroseconds(DRIVE_ORIGIN);
+    //             vTaskDelay(ms2Tick(20);
+    //             break;
+    //         case 'B':
+    //             servo_driver.writeMicroseconds(DRIVE_ORIGIN+val);
+    //             vTaskDelay(ms2Tick(drive_time));
+    //             servo_driver.writeMicroseconds(DRIVE_ORIGIN); 
+    //             vTaskDelay(ms2Tick(20);
+    //             break;
+    //         case 'R':
+    //             pos += val;
+    //             if (pos >= STEER_ORIGIN+45) {
+    //                 pos = STEER_ORIGIN+45;
+    //             }
+    //             servo_steer.write(pos);
+    //             vTaskDelay(ms2Tick(75));
+    //             break;
+    //         case 'L':
+    //             pos -= val;
+    //             if (pos <= 45) {
+    //                 pos = 45;
+    //             }
+    //             servo_steer.write(pos);
+    //             vTaskDelay(ms2Tick(75));
+    //             break;
+    //     }
+    //     digitalWrite(led_pin, LOW);
+    //     SerialBT.write(command);
+    //     SerialBT.write('\n');
+    // }
 }
