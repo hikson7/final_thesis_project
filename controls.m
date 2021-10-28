@@ -1,4 +1,4 @@
-function data_generation
+function controls
 
 clc
 clear
@@ -31,25 +31,11 @@ theta_d = state_out(:, 3);  % shell turning velocity
 phi = zeros(size(t, 1), 1);
 phi_d = zeros(size(t, 1), 1);
 
-% duration = 5;     % [s]
-% steer_velocity = 0.01;  % [rad/s]
-% 
-duration = 1;
-steer_velocity = -0.01;
+duration = 5;     % [s]
+steer_velocity = 0.01;  % [rad/s]
+insert_at = 5;      % [s]
 
-for i=2:8
-insert_at = i;      % [s]
 [phi, phi_d] = insert_steer_vel_input(t, insert_at, duration, steer_velocity, phi, phi_d);
-end
-
-% insert_at = 5;      % [s]
-% [phi, phi_d] = insert_steer_vel_input(t, insert_at, duration, steer_velocity, phi, phi_d);
-% 
-% duration = 0.5;
-% steer_velocity = -0.01;
-% steer_velocity = -steer_velocity;
-% insert_at = 7;
-% [phi, phi_d] = insert_steer_vel_input(t, insert_at, duration, steer_velocity, phi, phi_d);
 
 [x, y, ] = calculate_pose(theta_d, phi, phi_d, R, t);
 
