@@ -1,4 +1,4 @@
-function [state_out] = model(t, state)
+function [state_out] = model_steer(t, state)
 global R;
 
 % m1 = 0.05; % mass of shell
@@ -16,7 +16,13 @@ l = 0.3; % length of connection rod
 R = 1;  % radius of shell
 g = 9.80665;
 j1 = 1;
-const_torque = 0.1;
+const_torque = 0;
+
+if t > 5 && t < 5.5
+    const_torque = -0.1;
+elseif t >= 5.5 && t < 6
+    const_torque = 0.1;
+end
 
 % q1 = shell turn angle
 % q2 = swing angle
