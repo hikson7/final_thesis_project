@@ -6,7 +6,7 @@ clear
 t_top = 10;
 % t_top = 1.5;
 % t_top = 0.01*20;
-% t_top = 0.15;
+% t_top = 0.06;
 
 t = 0:0.01:t_top;
 tlen = size(t, 2);
@@ -30,18 +30,19 @@ x = zeros(tlen, 1);
 y = zeros(tlen, 1);
 
 k0 = 1;
-k1 = 1;
+k1 = 5;
 k2 = 1;
-k3 = 1;
+k3 = 2;
 
-ki = 2;
+kp = 1;
+ki = 1.1;
 kd = 0.1;
 
 R = 1;
 epis = zeros(tlen, 1);
 errors = zeros(tlen, 1);
 sigmas = zeros(tlen, 1);
-epi_ds = zeros(tlen, 1);
+% epi_ds = zeros(tlen, 1);
 
 phi_prev = 0;
 epi_prev = 0;
@@ -52,9 +53,6 @@ for i=1:tlen
     dt = t(i)-t_prev;
     
     error = cur_pose - pose_des(i, :)';
-    errors(i) = norm(error);
-%     errors(i, 1) = error(1);
-%     errors(i, 2) = error(2);
 
     x_len = x_des(i)-cur_pose(1);
     y_len = y_des(i)-cur_pose(2);
@@ -67,9 +65,6 @@ for i=1:tlen
     end
     sigma = atan2(y_len, x_len);    
     
-%     sigma = atan(y_len/x_len);
-%     sigma = atan((y_d(i)-cur_pose(2))/(x_d(i)-cur_pose(1)));
-%     sigma = acos((x_d(i)-cur_pose(1)/sqrt((y_d(i)-cur_pose(2))^2+(x_d(i)-cur_pose(1))^2)));
     sigmas(i) = sigma*180/pi;
     sigmas(i, 2) = x_len;
     sigmas(i, 3) = y_len;
@@ -79,10 +74,10 @@ for i=1:tlen
     end
     
     epi = sigma - varphi(i);
-    epis(i) = epi*180/pi;
     
     epi_sum = epi_sum + epi;
-    k_epi = ki*epi_sum + kd*(epi-epi_prev);
+    k_epi = kp + ki*epi_sum + kd*(epi-epi_prev);
+
 %     k_epi = 1;
 %     k3 = 1;
     error_k = norm(error)/(k3+norm(error));
@@ -127,6 +122,11 @@ for i=1:tlen
     t_prev = t(i);
     epi_prev = epi;
     phi_prev = phi_des(i);
+    
+    errors(i) = norm(error);
+%     errors(i, 1) = error(1);
+%     errors(i, 2) = error(2);
+    epis(i) = epi*180/pi;
 end
 
 figure(1);
