@@ -29,16 +29,26 @@ varphi(1) = pi/4;
 x = zeros(tlen, 1);
 y = zeros(tlen, 1);
 
+% R = 1;
+% k0 = 1;
+% k1 = 5;
+% k2 = 1;
+% k3 = 2;
+% 
+% kp = 1;
+% ki = 1.1;
+% kd = 0.1;
+
+R = 0.08;
 k0 = 1;
-k1 = 5;
-k2 = 1;
-k3 = 2;
+k1 = 1;
+k2 = 2;
+k3 = 1;
 
 kp = 1;
-ki = 1.1;
-kd = 0.1;
+ki = 1;
+kd = 260;
 
-R = 1;
 epis = zeros(tlen, 1);
 errors = zeros(tlen, 1);
 sigmas = zeros(tlen, 1);
@@ -63,6 +73,7 @@ for i=1:tlen
     if abs(y_len) < 0.00001
         y_len = 0;
     end
+    
     sigma = atan2(y_len, x_len);    
     
     sigmas(i) = sigma*180/pi;
@@ -73,13 +84,10 @@ for i=1:tlen
         sigma = varphi(i);
     end
     
-    epi = sigma - varphi(i);
-    
+    epi = sigma - varphi(i);    
     epi_sum = epi_sum + epi;
+    
     k_epi = kp + ki*epi_sum + kd*(epi-epi_prev);
-
-%     k_epi = 1;
-%     k3 = 1;
     error_k = norm(error)/(k3+norm(error));
     
     % desired drive velocity
@@ -87,17 +95,9 @@ for i=1:tlen
     
     % ----------- desired steer position
     % Calculate change in heading
-%     epi_d = (epi-epi_prev)/dt;
-%     epi_ds(i) = epi_d*180/pi;
-    
+
     % Calculate desired steer angle.
-%     phi_des(i) = k2*error_k*sin(epi_d/theta_d_des);
-%     phi_des(i) = k2*error_k*sin(epi/theta_d_des);
     phi_des(i) = -k2*error_k*sin(epi)*k_epi;
-%     phi_des(i) = -asin(epi_d/theta_d_des);
-    
-%     phi_des(i) = -k2*sin(epi);
-%     phi_d_des = (phi_des(i)-phi_prev)/dt;
     phi_d_des = phi_des(i)-phi_prev;
    
     % Heading
@@ -124,8 +124,6 @@ for i=1:tlen
     phi_prev = phi_des(i);
     
     errors(i) = norm(error);
-%     errors(i, 1) = error(1);
-%     errors(i, 2) = error(2);
     epis(i) = epi*180/pi;
 end
 
