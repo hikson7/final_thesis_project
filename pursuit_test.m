@@ -3,10 +3,10 @@ function pursuit_test
 % clc
 clear
 % clf
-
-t_top = 1.5;
+t_top = 10;
+% t_top = 1.5;
 % t_top = 0.01*20;
-% t_top = 0.25;
+% t_top = 0.15;
 
 t = 0:0.01:t_top;
 tlen = size(t, 2);
@@ -34,6 +34,9 @@ k1 = 1;
 k2 = 1;
 k3 = 1;
 
+ki = 2;
+kd = 0.1;
+
 R = 1;
 epis = zeros(tlen, 1);
 errors = zeros(tlen, 1);
@@ -42,21 +45,17 @@ epi_ds = zeros(tlen, 1);
 
 phi_prev = 0;
 epi_prev = 0;
+epi_sum = 0;
 t_prev = -0.01;
 
 for i=1:tlen
-    if i+1 == tlen+1
-        break;
-    end
     dt = t(i)-t_prev;
     
     error = cur_pose - pose_des(i, :)';
     errors(i) = norm(error);
 %     errors(i, 1) = error(1);
 %     errors(i, 2) = error(2);
-    if i == 24
-        ttt = 0
-    end
+
     x_len = x_des(i)-cur_pose(1);
     y_len = y_des(i)-cur_pose(2);
 
@@ -82,6 +81,10 @@ for i=1:tlen
     epi = sigma - varphi(i);
     epis(i) = epi*180/pi;
     
+    epi_sum = epi_sum + epi;
+    k_epi = ki*epi_sum + kd*(epi-epi_prev);
+%     k_epi = 1;
+%     k3 = 1;
     error_k = norm(error)/(k3+norm(error));
     
     % desired drive velocity
@@ -89,23 +92,29 @@ for i=1:tlen
     
     % ----------- desired steer position
     % Calculate change in heading
-    epi_d = (epi-epi_prev)/dt;
-    epi_ds(i) = epi_d*180/pi;
+%     epi_d = (epi-epi_prev)/dt;
+%     epi_ds(i) = epi_d*180/pi;
     
     % Calculate desired steer angle.
 %     phi_des(i) = k2*error_k*sin(epi_d/theta_d_des);
-    phi_des(i) = k2*error_k*sin(epi/theta_d_des);
+%     phi_des(i) = k2*error_k*sin(epi/theta_d_des);
+    phi_des(i) = -k2*error_k*sin(epi)*k_epi;
 %     phi_des(i) = -asin(epi_d/theta_d_des);
     
 %     phi_des(i) = -k2*sin(epi);
-    phi_d_des = (phi_des(i)-phi_prev)/dt;
-    
+%     phi_d_des = (phi_des(i)-phi_prev)/dt;
+    phi_d_des = phi_des(i)-phi_prev;
+   
     % Heading
     varphi_d = theta_d_des*sin(phi_des(i));
     
     % find change
     xdot = R*(theta_d_des*cos(phi_des(i)).*cos(varphi(i))+phi_d_des*sin(varphi(i)));
     ydot = R*(theta_d_des*cos(phi_des(i)).*sin(varphi(i))-phi_d_des*cos(varphi(i)));
+    
+    if i+1 == tlen+1
+        break;
+    end
     
     % update current pose
     x(i+1) = x(i) + xdot*dt;
