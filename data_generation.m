@@ -84,14 +84,14 @@ end
 function [x, y, varphi] = calculate_pose(theta_d_ori, phi_ori, phi_d_ori, R, t1, t2)
     
     % make them the same length
-    inc_max = max(size(t1, 1), size(t2, 1))
+    inc_max = max(size(t1, 1), size(t2, 1));
     
     theta_d = zeros(inc_max, 1);
     phi = zeros(inc_max, 1);
     phi_d = zeros(inc_max, 1);
     
     j = 1;
-    % if t1 has finer increments than t2
+
     if size(t1, 1) < size(t2, 1)
         t = t2;
         phi = phi_ori;
@@ -102,8 +102,10 @@ function [x, y, varphi] = calculate_pose(theta_d_ori, phi_ori, phi_d_ori, R, t1,
     end
     
     for i=1:inc_max
-        if size(t1, 1) < size(t2, 1) 
+        if size(t1, 1) < size(t2, 1)
             theta_d(i) = theta_d_ori(j);
+            % once smaller increment is larger,
+            % move larger increment to next index
             if t1(j) < t2(i)
                 j = j + 1;
             end
@@ -115,21 +117,7 @@ function [x, y, varphi] = calculate_pose(theta_d_ori, phi_ori, phi_d_ori, R, t1,
             end
         end
     end
-% 
-%     % add fillers for t2
-%     if size(t1, 1) > size(t2, 1)
-%         t = t1;
-%         theta_d = theta_d_ori;
-%         for i=1:inc_max
-%             phi(i) = phi_ori(j);
-%             phi_d(i) = phi_d_ori(j);
-%             
-%             if t1(i) > t2(j)
-%                 j = j + 1;
-%             end
-%         end
-%     end
-    
+
     % heading of robot
     varphi_d = theta_d.*sin(phi);
     varphi = zeros(inc_max, 1);
@@ -150,54 +138,3 @@ function [x, y, varphi] = calculate_pose(theta_d_ori, phi_ori, phi_d_ori, R, t1,
         y(i+1) = y(i) + ydot*t(i);
     end
 end
-
-% function [phi, phi_d] = insert_steer_vel_input(timesteps, insert_at, duration, steer_vel, phi, phi_d)
-%     % Insert artificial steering
-% 
-%     num_timesteps = size(timesteps, 1);
-%     start_timestep = 0;
-%     end_timestep = 0;
-%     for i=1:num_timesteps
-%         if timesteps(i) > insert_at && start_timestep == 0
-%             start_timestep = i;
-%         end
-%         if timesteps(i) > insert_at+duration
-%             end_timestep = i;
-%             break
-%         end
-%     end
-%     if end_timestep == 0
-%         end_timestep = num_timesteps;
-%     end
-% %     end_timestep = start_timestep+duration;
-% 
-%     insert_section = start_timestep:end_timestep;
-% 
-%     steer_t = timesteps(insert_section);    
-%     
-%     phi_d(insert_section) = steer_vel;
-%     phi(insert_section) = phi_d(insert_section).*steer_t;
-% end
-% 
-% function [x, y, varphi] = calculate_pose(theta_d, phi, phi_d, R, t)
-%     
-%     % heading of robot
-% 
-%     varphi_d = theta_d.*sin(phi);
-%     varphi = zeros(size(t, 1), 1);
-%     x = zeros(size(t, 1), 1);
-%     y = zeros(size(t, 1), 1);
-% 
-%     for i=1:size(t, 1)
-%         if i+1 == size(t, 1)+1
-%             break;
-%         end
-%         varphi(i+1) = varphi(i) + varphi_d(i).*t(i);
-% 
-%         xdot = R*(theta_d(i).*cos(phi(i)).*cos(varphi(i))+phi_d(i).*sin(varphi(i)));
-%         ydot = R*(theta_d(i).*cos(phi(i)).*sin(varphi(i))-phi_d(i).*cos(varphi(i)));
-% 
-%         x(i+1) = x(i) + xdot*t(i);
-%         y(i+1) = y(i) + ydot*t(i);
-%     end
-% end
