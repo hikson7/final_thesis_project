@@ -76,10 +76,6 @@ for i=1:tlen
     
     sigma = atan2(y_len, x_len);    
     
-    sigmas(i) = sigma*180/pi;
-    sigmas(i, 2) = x_len;
-    sigmas(i, 3) = y_len;
-    
     if sigma == 0
         sigma = varphi(i);
     end
@@ -100,6 +96,9 @@ for i=1:tlen
     phi_des(i) = -k2*error_k*sin(epi)*k_epi;
     phi_d_des = phi_des(i)-phi_prev;
    
+
+    % update kinematic pose.
+
     % Heading
     varphi_d = theta_d_des*sin(phi_des(i));
     
