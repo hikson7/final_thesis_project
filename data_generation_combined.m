@@ -41,10 +41,11 @@ cur_varphi = pi/4;
 global t_prev;
 t_prev = 0;
 
-% global arr_theta_d_des arr_phi_des arr_phi_d_des;
-% arr_theta_d_des = 0;
-% arr_phi_des = 0;
-% arr_phi_d_des = 0;
+global theta_d_err_total theta_d_err_prev steer_err_total steer_err_prev;
+theta_d_err_total = 0;
+theta_d_err_prev = 0;
+steer_err_total = 0;
+steer_err_prev = 0;
 [t, state_out] = ode45(@closed_model_combined, tspan, state, trajhandle, trajdhandle, options);
 
 % retrieve necessary outputs
@@ -72,6 +73,7 @@ xlabel("x displacement [m]")
 ylabel("y displacement [m]")
 grid on;
 grid minor;
+
 % range = 1000;
 % axis([-range/2 range/2 -range/2 range/2])
 
@@ -118,6 +120,25 @@ grid minor;
 title("Phi_d error");
 xlabel("time [t]")
 ylabel("anguar velocity [rad/s]")
+
+
+% figure(4);
+% subplot(2, 1, 1);
+
+% plot(t, theta_d-theta_d_des, 'b-');
+% grid on;
+% grid minor;
+% title("x error")
+% xlabel("time [s]")
+% ylabel("angular velocity [rad/s]")
+% 
+% subplot(2, 1, 2);
+% plot(t, phi-phi_des, 'b-');
+% grid on;
+% grid minor;
+% title("Phi error");
+% xlabel("time [t]")
+% ylabel("anguar displacement [rad]")
 
 end
 
