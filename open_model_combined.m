@@ -1,4 +1,4 @@
-function state_out = decoupled_combined_model(t, cur_state)
+function state_out = open_model_combined(t, cur_state)
 
 global R;
 
@@ -30,10 +30,20 @@ qd2_st = cur_state(8);
 const_drive_torque = 0.0005;
 const_steer_torque = 0;
 
-if t > 5 && t < 5.5
+if t > 5 && t < 5.1
     const_steer_torque = -0.01;
-elseif t >= 5.5 && t < 6
+elseif t >= 5.1 && t < 5.2
+    const_steer_torque = 0;
+elseif t >= 5.2 && t < 5.3
     const_steer_torque = 0.01;
+elseif t <= 5.3 && t < 5.4
+    const_steer_torque = 0;
+elseif t >= 5.4 && t < 5.5
+    const_steer_torque = 0.01;
+elseif t >= 5.5 && t < 5.6
+    const_steer_torque = 0;
+elseif t >= 5.6 && t < 5.7
+    const_steer_torque = -0.01;
 end
 
 tau_dr = [const_drive_torque; const_drive_torque];

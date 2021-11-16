@@ -59,6 +59,9 @@ function theta_d_des = desired_theta_d(xd_des, yd_des, k0, k1, error_k, epi)
 end
 
 function phi_des = desired_phi(error_k, epi, epi_prev, epi_sum, k2)
+    % kp = 1;
+    % ki = 1;
+    % kd = 260;
     kp = 1;
     ki = 1;
     kd = 260;

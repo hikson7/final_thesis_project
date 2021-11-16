@@ -6,7 +6,8 @@ m1 = 0.05; % mass of shell
 m2 = 0.1; % mass of internal
 m3 = 1; % mass of counter weight
 l = 0.03; % length of connection rod
-R = 0.08;  % radius of shell
+% R = 0.08;  % radius of shell
+R = 1;
 g = 9.80665;
 j1 = 0.1;
 
@@ -91,15 +92,15 @@ end
 qdd_dr = M_dr^(-1)*(B_dr.*tau_dr-C_dr);
 qdd_st = M_st^(-1)*(B_st.*tau_st-C_st);
 
-state_out(1, 1) = qd1_dr;
-state_out(2, 1) = qd2_dr;
-state_out(3, 1) = qdd_dr(1);
-state_out(4, 1) = qdd_dr(2);
+state_out(1, 1) = qd1_dr;       % spinning angle of shell           (theta)
+state_out(2, 1) = qd2_dr;       % swinging angle of counterweight
+state_out(3, 1) = qdd_dr(1);    % theta_d
+state_out(4, 1) = qdd_dr(2);    % 
 
-state_out(5, 1) = qd1_st;
-state_out(6, 1) = qd2_st;
-state_out(7, 1) = qdd_st(1);
-state_out(8, 1) = qdd_st(2);
+state_out(5, 1) = qd1_st;       % phi 
+state_out(6, 1) = qd2_st;       % 
+state_out(7, 1) = qdd_st(1);    % phi_d
+state_out(8, 1) = qdd_st(2);    % 
 
 update_pose(qdd_dr(1), qd1_st, qdd_st(1), R, dt);
 
@@ -121,19 +122,19 @@ function [M, C, B] = create_matrices(q2, qd2, m1, m2, m3, R, l, j1, g)
 end
 
 
-function update_pose(theta_d, phi, phi_d, R, dt)
-    global cur_pose cur_varphi;
+% function update_pose(theta_d, phi, phi_d, R, dt)
+%     global cur_pose cur_varphi;
 
-    varphi_d = theta_d*sin(phi);
-    varphi = cur_varphi + varphi_d*dt;
+%     varphi_d = theta_d*sin(phi);
+%     varphi = cur_varphi + varphi_d*dt;
 
-    xdot = R*(theta_d*cos(phi)*cos(varphi)+phi_d*sin(varphi));
-    ydot = R*(theta_d*cos(phi)*sin(varphi)-phi_d*cos(varphi));
+%     xdot = R*(theta_d*cos(phi)*cos(varphi)+phi_d*sin(varphi));
+%     ydot = R*(theta_d*cos(phi)*sin(varphi)-phi_d*cos(varphi));
 
-    x = cur_pose(1) + xdot*dt;
-    y = cur_pose(2) + ydot*dt;
+%     x = cur_pose(1) + xdot*dt;
+%     y = cur_pose(2) + ydot*dt;
 
-    cur_pose(1) = x;
-    cur_pose(2) = y;
-    cur_varphi = varphi;
-end
+%     cur_pose(1) = x;
+%     cur_pose(2) = y;
+%     cur_varphi = varphi;
+% end

@@ -12,14 +12,9 @@ t = 0:0.01:t_top;
 tlen = size(t, 2);
 
 x_des = t';
-y_des = sin(t)';
+y_des = -sin(t)';
 xd_des = 1*ones(1, tlen);
-yd_des = cos(t);
-
-% x_des = t';
-% y_des = -sin(t)';
-% xd_des = 1*ones(1, tlen);
-% yd_des = -cos(t);
+yd_des = -cos(t);
 
 pose_des = [x_des y_des];
 
@@ -29,20 +24,10 @@ cur_pose = [0; 0];
 
 % heading of robot
 varphi = zeros(tlen, 1);
-varphi(1) = pi/4;
+varphi(1) = -pi/4;
 
 x = zeros(tlen, 1);
 y = zeros(tlen, 1);
-
-% R = 1;
-% k0 = 1;
-% k1 = 5;
-% k2 = 1;
-% k3 = 2;
-% 
-% kp = 1;
-% ki = 1.1;
-% kd = 0.1;
 
 R = 0.08;
 k0 = 1;
@@ -50,17 +35,15 @@ k1 = 1;
 k2 = 2;
 k3 = 1;
 
-kp = 1;
-ki = 1;
-kd = 260;
+kp = 5;
+ki = 0.1;
+kd = 300;
 
 epis = zeros(tlen, 1);
 errors = zeros(tlen, 1);
-% sigmas = zeros(tlen, 1);
+sigmas = zeros(tlen, 1);
 % epi_ds = zeros(tlen, 1);
-errors_per = zeros(tlen, 1);
-epis_per = zeros(tlen, 1);
-    
+
 phi_prev = 0;
 epi_prev = 0;
 epi_sum = 0;
@@ -130,9 +113,7 @@ for i=1:tlen
     phi_prev = phi_des(i);
     
     errors(i) = norm(error);
-    epis(i) = epi;
-    errors_per(i) = norm(error)/norm(pose_des(i, :)');
-    epis_per(i) = epi/sigma;
+    epis(i) = epi*180/pi;
 end
 
 figure(1);
@@ -148,42 +129,22 @@ ylabel("y displacement [m]")
 grid on;
 grid minor;
 
-legend("Desired path", "Pursuit path");
-
-% figure(2);
-% subplot(2, 1, 1);
-% 
-% plot(t, epis, 'b-');
-% grid on;
-% grid minor;
-% title("Heading error")
-% xlabel("time [s]")
-% ylabel("error [%]")
-% 
-% subplot(2, 1, 2);
-% plot(t, errors, 'b-');
-% grid on;
-% grid minor;
-% title("x-y normlised error");
-% xlabel("time [t]")
-% ylabel("error [%]")
-
-figure(3);
+figure(2);
 subplot(2, 1, 1);
 
-plot(t, epis_per, 'b-');
+plot(t, epis, 'b-');
 grid on;
 grid minor;
-title("Heading error (%)")
+title("Heading error (epislon)")
 xlabel("time [s]")
-ylabel("error (%)")
+ylabel("error")
 
 subplot(2, 1, 2);
-plot(t, errors_per, 'b-');
+plot(t, errors, 'b-');
 grid on;
 grid minor;
-title("x-y normlised error (%)");
+title("xy norm error");
 xlabel("time [t]")
-ylabel("error (%)")
+ylabel("error")
 
 end
